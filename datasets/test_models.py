@@ -16,7 +16,7 @@ from pymongo import MongoClient
 from typing import Dict, List, Optional
 import warnings
 warnings.filterwarnings('ignore')
-
+import os
 
 class ModelTester:
     """Tester para validar modelos con datos reales"""
@@ -242,7 +242,7 @@ class ModelTester:
         }
 
 
-def connect_to_mongodb(mongodb_url: str = 'mongodb+srv://223221_db_user:yiUvhHklDudvXHKm@vocalis-cluster.astawly.mongodb.net/audio_features_db', db_name: str = 'audio_features_db'):
+def connect_to_mongodb(mongodb_url: str = 'mongodb://localhost:27017/', db_name: str = 'audio'):
     """Conecta a MongoDB"""
     print(f"🔌 Conectando a MongoDB...")
     print(f"   URL: {mongodb_url}")
@@ -271,10 +271,10 @@ def main():
     print("="*70)
     
     # Configuración (ajusta según tu setup)
-    MONGODB_URL = 'mongodb+srv://223221_db_user:yiUvhHklDudvXHKm@vocalis-cluster.astawly.mongodb.net/audio_features_db'
-    DB_NAME = 'audio_features_db'
-    COLLECTION_NAME = 'audio_features'
-    
+
+    MONGODB_URL = os.getenv('MONGODB_URL')
+    DB_NAME = os.getenv('DB_NAME')
+    COLLECTION_NAME = os.getenv('COLLECTION_NAME')
     # 1. Conectar a MongoDB
     db = connect_to_mongodb(MONGODB_URL, DB_NAME)
     if db is None:

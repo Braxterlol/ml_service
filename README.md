@@ -273,7 +273,7 @@ Si no hay pronunciation, se redistribuyen los pesos proporcionalmente.
 
 1. ✅ Servicio funcionando con RF y XGB
 2. ⬜ Integrar con Audio Processing Service
-3. ⬜ Agregar Azure Speech Service
+3. ✅ Agregar Azure Speech Service
 4. ⬜ Guardar predictions en PostgreSQL
 5. ⬜ Agregar LLM Feedback Service
 
