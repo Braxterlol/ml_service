@@ -1,0 +1,5 @@
+.env
+diagnose.py
+test_azure.py
+__pycache__/
+

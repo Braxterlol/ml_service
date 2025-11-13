@@ -1,0 +1,20 @@
+{
+  "model_type": "RandomForestRegressor",
+  "version": "v1.0.0",
+  "n_estimators": 150,
+  "max_depth": 15,
+  "features": [
+    "jitter",
+    "shimmer",
+    "pause_count",
+    "pause_duration_mean",
+    "pause_duration_std",
+    "speaking_time_ratio",
+    "f0_std",
+    "f0_range",
+    "energy_std",
+    "speech_rate_normalized",
+    "articulation_rate_normalized"
+  ],
+  "trained_on": "2025-11-12T18:58:30.097156"
+}

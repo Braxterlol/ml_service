@@ -1,0 +1,19 @@
+{
+  "model_type": "XGBRegressor",
+  "version": "v1.0.0",
+  "n_estimators": 200,
+  "max_depth": 6,
+  "learning_rate": 0.05,
+  "features": [
+    "speech_rate",
+    "articulation_rate",
+    "pause_count",
+    "pause_density",
+    "speaking_time_ratio",
+    "average_pause_duration",
+    "pause_duration_std",
+    "duration_seconds",
+    "pause_pattern_regularity"
+  ],
+  "trained_on": "2025-11-12T19:01:22.807814"
+}
