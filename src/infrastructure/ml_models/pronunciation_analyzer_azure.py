@@ -2,7 +2,7 @@
 Pronunciation Analyzer usando Azure Speech Service
 
 Este módulo usa Azure Cognitive Services Speech SDK
-para evaluar pronunciación de niños.
+para evaluar pronunciación.
 """
 
 import logging
@@ -79,14 +79,18 @@ class PronunciationAnalyzerAzure:
             return self._placeholder_score(reference_text)
         
         try:
-            # Decodificar audio
+            import base64
             audio_bytes = base64.b64decode(audio_base64)
+            logger.info(f"🎤 Audio recibido: {len(audio_bytes)} bytes")
+            logger.info(f"📝 Reference text: '{reference_text}'")
             
-            # Configurar audio
-            audio_stream = speechsdk.audio.PushAudioInputStream()
-            audio_config = speechsdk.audio.AudioConfig(stream=audio_stream)
+            # Crear el speech config
+            speech_config = speechsdk.SpeechConfig(
+                subscription=self.speech_key,
+                region=self.speech_region
+            )
             
-            # Configurar pronunciation assessment
+            # Configurar para reconocimiento de pronunciación
             pronunciation_config = speechsdk.PronunciationAssessmentConfig(
                 reference_text=reference_text,
                 grading_system=speechsdk.PronunciationAssessmentGradingSystem.HundredMark,
@@ -94,76 +98,63 @@ class PronunciationAnalyzerAzure:
                 enable_miscue=True
             )
             
-            # Configurar idioma
-            self.speech_config.speech_recognition_language = language
-            
-            # Crear recognizer
-            speech_recognizer = speechsdk.SpeechRecognizer(
-                speech_config=self.speech_config,
-                audio_config=audio_config
+            # Audio en memoria
+            audio_format = speechsdk.audio.AudioStreamFormat(
+                samples_per_second=16000,  # Azure prefiere 16kHz
+                bits_per_sample=16,
+                channels=1
             )
             
-            # Aplicar pronunciation assessment al recognizer
+            push_stream = speechsdk.audio.PushAudioInputStream(audio_format)
+            push_stream.write(audio_bytes)
+            push_stream.close()
+            
+            audio_config = speechsdk.audio.AudioConfig(stream=push_stream)
+            
+            # Speech recognizer
+            speech_recognizer = speechsdk.SpeechRecognizer(
+                speech_config=speech_config,
+                audio_config=audio_config,
+                language="es-MX"  # Español de México
+            )
+            
+            # Aplicar configuración de pronunciación
             pronunciation_config.apply_to(speech_recognizer)
             
-            # Escribir audio al stream
-            audio_stream.write(audio_bytes)
-            audio_stream.close()
-            
             # Reconocer
-            result = speech_recognizer.recognize_once()
+            result = speech_recognizer.recognize_once_async().get()
             
-            # Procesar resultado
+            # ✅ DEBUG: Ver qué reconoció Azure
+            logger.info(f"🔍 Azure result reason: {result.reason}")
+            logger.info(f"🔍 Azure recognized text: '{result.text}'")
+        
             if result.reason == speechsdk.ResultReason.RecognizedSpeech:
                 pronunciation_result = speechsdk.PronunciationAssessmentResult(result)
                 
-                # Extraer scores
-                accuracy_score = pronunciation_result.accuracy_score
-                fluency_score = pronunciation_result.fluency_score
-                completeness_score = pronunciation_result.completeness_score
-                pronunciation_score = pronunciation_result.pronunciation_score
+                score = pronunciation_result.pronunciation_score
+                confidence = pronunciation_result.accuracy_score / 100.0
                 
-                # Extraer detalles por palabra
-                word_scores = []
-                try:
-                    import json
-                    details = json.loads(result.properties.get(
-                        speechsdk.PropertyId.SpeechServiceResponse_JsonResult
-                    ))
-                    
-                    if 'NBest' in details and len(details['NBest']) > 0:
-                        words = details['NBest'][0].get('Words', [])
-                        for word_data in words:
-                            word_scores.append({
-                                'word': word_data.get('Word', ''),
-                                'accuracy_score': word_data.get('PronunciationAssessment', {}).get('AccuracyScore', 0),
-                                'error_type': word_data.get('PronunciationAssessment', {}).get('ErrorType', 'None')
-                            })
-                except Exception as e:
-                    logger.warning(f"No se pudieron extraer detalles de palabras: {e}")
+                logger.info(f"✅ Azure pronunciation score: {score}")
+                logger.info(f"✅ Azure accuracy: {confidence}")
+                logger.info(f"✅ Azure fluency: {pronunciation_result.fluency_score}")
+                logger.info(f"✅ Azure completeness: {pronunciation_result.completeness_score}")
                 
-                logger.info(f"✅ Azure pronunciation score: {pronunciation_score:.1f}")
-                
-                return pronunciation_score, {
-                    'status': 'success',
-                    'accuracy_score': accuracy_score,
-                    'fluency_score': fluency_score,
-                    'completeness_score': completeness_score,
-                    'word_scores': word_scores,
-                    'recognized_text': result.text
-                }
-            
-            elif result.reason == speechsdk.ResultReason.NoMatch:
-                logger.warning("Azure no pudo reconocer el audio")
-                return self._placeholder_score(reference_text, status='no_match')
-            
+                return float(score), float(confidence)
             else:
-                logger.error(f"Error en Azure: {result.reason}")
-                return self._placeholder_score(reference_text, status='error')
-        
+                logger.warning(f"⚠️ Azure no reconoció voz. Reason: {result.reason}")
+                if result.reason == speechsdk.ResultReason.NoMatch:
+                    logger.warning(f"⚠️ No match details: {result.no_match_details}")
+                elif result.reason == speechsdk.ResultReason.Canceled:
+                    cancellation = result.cancellation_details
+                    logger.error(f"❌ Canceled: {cancellation.reason}")
+                    logger.error(f"❌ Error details: {cancellation.error_details}")
+                
+                return 0.0, 0.0      
         except Exception as e:
-            logger.error(f"❌ Error en Azure pronunciation assessment: {e}")
-            return self._placeholder_score(reference_text, status='exception', error=str(e))
+            logger.error(f"❌ Error en Azure Speech: {e}")
+            import traceback
+            logger.error(traceback.format_exc())
+            return 0.0, 0.0
     
     def _placeholder_score(
         self,

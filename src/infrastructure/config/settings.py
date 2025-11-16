@@ -27,7 +27,7 @@ class Settings(BaseSettings):
     # MongoDB (para cargar features)
     MONGODB_URL: str = "mongodb://localhost:27017/"
     MONGODB_DB_NAME: str = "audio_features_db"
-    
+    COLLECTION_NAME: str = "audio_features"
     # PostgreSQL (para guardar predictions)
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/ml_analysis_db"
     
@@ -40,6 +40,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = True
+
 
 
 # Instancia global
