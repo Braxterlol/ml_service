@@ -73,3 +73,24 @@ def get_analyze_use_case() -> AnalyzeAttemptUseCase:
     return AnalyzeAttemptUseCase(
         ml_analysis_service=get_ml_analysis_service()
     )
+
+from infrastructure.clients import LLMFeedbackClient
+
+# Global instance
+_llm_feedback_client = None
+
+def get_llm_feedback_client() -> LLMFeedbackClient:
+    """
+    Dependency para obtener LLM Feedback Client.
+    
+    Returns:
+        LLMFeedbackClient: Cliente singleton
+    """
+    global _llm_feedback_client
+    
+    if _llm_feedback_client is None:
+        _llm_feedback_client = LLMFeedbackClient(
+            base_url=settings.LLM_FEEDBACK_SERVICE_URL
+        )
+    
+    return _llm_feedback_client
