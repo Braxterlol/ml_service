@@ -3,7 +3,8 @@ Settings para ML Analysis Service
 """
 
 from pydantic_settings import BaseSettings
-from typing import Optional
+from pydantic import Field
+from typing import Optional, List
 
 
 class Settings(BaseSettings):
@@ -28,19 +29,33 @@ class Settings(BaseSettings):
     MONGODB_URL: str = "mongodb://localhost:27017/"
     MONGODB_DB_NAME: str = "audio_features_db"
     COLLECTION_NAME: str = "audio_features"
+    
     # PostgreSQL (para guardar predictions)
     DATABASE_URL: str = "postgresql://user:password@localhost:5432/ml_analysis_db"
     
     # API Keys (para auth entre servicios)
     INTERNAL_API_KEY: str = "change-me-in-production"
     
-    # CORS
-    ALLOWED_ORIGINS: list = ["*"]
+    # CORS (CORREGIDO)
+    ALLOWED_ORIGINS: List[str] = ["*"]
+    
+    # LLM Feedback Service
+    LLM_FEEDBACK_SERVICE_URL: str = Field(
+        default="http://localhost:8003",
+        description="URL del LLM Feedback Service"
+    )
+    LLM_FEEDBACK_TIMEOUT: int = Field(
+        default=30,
+        description="Timeout para llamadas al LLM Service (segundos)"
+    )
+    LLM_FEEDBACK_ENABLED: bool = Field(
+        default=True,
+        description="Habilitar llamadas al LLM Feedback Service"
+    )
     
     class Config:
         env_file = ".env"
         case_sensitive = True
-
 
 
 # Instancia global
