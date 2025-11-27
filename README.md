@@ -269,13 +269,53 @@ Si no hay pronunciation, se redistribuyen los pesos proporcionalmente.
 
 ---
 
-## 📝 Próximos Pasos
+## 🚀 Deployment
 
-1. ✅ Servicio funcionando con RF y XGB
-2. ⬜ Integrar con Audio Processing Service
-3. ✅ Agregar Azure Speech Service
-4. ⬜ Guardar predictions en PostgreSQL
-5. ⬜ Agregar LLM Feedback Service
+### Local Development
+
+```bash
+python main.py
+```
+
+### Production (AWS EC2)
+
+Para desplegar en producción, consulta las guías completas:
+
+- 📘 **[DEPLOYMENT.md](./DEPLOYMENT.md)** - Guía completa paso a paso
+- ⚡ **[QUICK_DEPLOY.md](./QUICK_DEPLOY.md)** - Comandos rápidos
+- 🔧 **[deploy.sh](./deploy.sh)** - Script automatizado
+
+**Resumen rápido:**
+
+```bash
+# 1. Conectar a EC2
+ssh -i tu-clave.pem ubuntu@<IP-PUBLICA>
+
+# 2. Clonar repo
+git clone https://github.com/Braxterlol/ml_service.git ml_analysis_service
+cd ml_analysis_service
+git checkout feedback
+
+# 3. Crear .env (ver env.example)
+nano .env
+
+# 4. Deploy automático
+chmod +x deploy.sh
+./deploy.sh
+```
+
+Ver más detalles en [DEPLOYMENT.md](./DEPLOYMENT.md)
+
+---
+
+## 📝 Features
+
+- ✅ Servicio funcionando con RF y XGB
+- ✅ Azure Speech Service integrado
+- ✅ LLM Feedback Service integrado
+- ✅ Feedback personalizado con contexto
+- ✅ Sistema de progresión (stars, passed, unlocked)
+- ✅ Ready for production deployment
 
 ---
 
