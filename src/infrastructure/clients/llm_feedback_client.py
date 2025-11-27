@@ -116,7 +116,7 @@ class LLMFeedbackClient:
             print(f"⚠️ Timeout llamando a LLM Feedback Service")
             return None
         except httpx.HTTPStatusError as e:
-            print(f"⚠️ Error HTTP {e.response.status_code} del LLM Feedback Service")
+            print(f"⚠️ Error HTTP {e.response.status_code} del LLM Feedback Service: {e.response.text}")
             return None
         except Exception as e:
             print(f"⚠️ Error inesperado llamando a LLM Feedback Service: {e}")

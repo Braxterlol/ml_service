@@ -233,8 +233,14 @@ async def analyze_audio(
                 
                 # Obtener info del ejercicio
                 exercise_metadata = request.exercise_metadata or {}
+                
+                # Validar exercise_type (debe ser: fonema, ritmo, o entonacion)
+                exercise_type = exercise_metadata.get("type", "fonema")
+                if exercise_type not in ["fonema", "ritmo", "entonacion"]:
+                    exercise_type = "fonema"  # Default seguro
+                
                 exercise_info = {
-                    "exercise_type": exercise_metadata.get("type", "general"),
+                    "exercise_type": exercise_type,
                     "exercise_content": exercise_metadata.get("content", "ejercicio de pronunciación"),
                     "difficulty_level": exercise_metadata.get("difficulty_level", 1),
                     "reference_text": request.reference_text or ""
