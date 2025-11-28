@@ -9,12 +9,13 @@ RUN apt-get update && apt-get install -y \
     alsa-utils \
     wget \
     ca-certificates \
+    libcurl4 \
+    libcurl4-openssl-dev \
+    libgcc-s1 \
+    libstdc++6 \
     libgstreamer1.0-0 \
-    libgstreamer-plugins-base1.0-0 \
     gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
-    gstreamer1.0-pulseaudio \
-    gstreamer1.0-tools \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
