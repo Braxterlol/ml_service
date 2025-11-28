@@ -11,9 +11,10 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     libgstreamer1.0-0 \
     libgstreamer-plugins-base1.0-0 \
-    libgstreamer-plugins-good1.0-0 \
+    gstreamer1.0-plugins-base \
     gstreamer1.0-plugins-good \
     gstreamer1.0-pulseaudio \
+    gstreamer1.0-tools \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
