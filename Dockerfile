@@ -1,13 +1,14 @@
-FROM python:3.12-slim
+FROM python:3.12
 
 # Instalar dependencias del sistema necesarias para Azure Speech SDK y ML libraries
 RUN apt-get update && apt-get install -y \
     build-essential \
     libssl-dev \
     libasound2 \
+    libasound2-dev \
+    alsa-utils \
     wget \
     ca-certificates \
-    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -24,6 +25,9 @@ COPY . .
 
 # Crear directorio para logs si es necesario
 RUN mkdir -p /app/logs
+
+# Variables de entorno para Azure Speech SDK
+ENV LD_LIBRARY_PATH=/usr/local/lib/python3.12/site-packages/azure/cognitiveservices/speech/lib:$LD_LIBRARY_PATH
 
 # Exponer el puerto (Railway lo detectará automáticamente)
 EXPOSE 8002
