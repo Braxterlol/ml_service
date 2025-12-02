@@ -104,7 +104,7 @@ class AudioFeatures:
     
     def get_rhythm_features(self) -> list:
         """Retorna features para XGBoost (Ritmo)"""
-        return [
+        features = [
             self.speech_rate,
             self.articulation_rate,
             self.pause_count,
@@ -115,3 +115,15 @@ class AudioFeatures:
             self.duration_seconds,
             self.pause_pattern_regularity
         ]
+        
+        # DEBUG: Log para ver valores reales
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.info(f"🔍 Rhythm features: speech_rate={self.speech_rate:.2f}, "
+                    f"articulation_rate={self.articulation_rate:.2f}, "
+                    f"pause_count={self.pause_count}, "
+                    f"pause_density={self.pause_density:.4f}, "
+                    f"speaking_time_ratio={self.speaking_time_ratio:.4f}, "
+                    f"duration={self.duration_seconds:.2f}s")
+        
+        return features
